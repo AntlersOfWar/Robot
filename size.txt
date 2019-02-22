@@ -1,0 +1,2 @@
+   text	   data	    bss	    dec	    hex	filename
+  34752	   3424	   5628	  43804	   ab1c	../PT_01.elf

@@ -16,13 +16,15 @@ FEHServo lever_servo(FEHServo::Servo1);
 //fl means front-left, br means back-right.
 DigitalEncoder fl_encoder(FEHIO::P0_0);
 DigitalEncoder fr_encoder(FEHIO::P0_1);
-DigitalEncoder bl_encoder(FEHIO::P0_2);
-DigitalEncoder br_encoder(FEHIO::P0_3);
+DigitalEncoder bl_encoder(FEHIO::P0_3);
+DigitalEncoder br_encoder(FEHIO::P0_2);
 
 FEHMotor fl_motor(FEHMotor::Motor0, 5.0);
 FEHMotor fr_motor(FEHMotor::Motor1, 5.0);
-FEHMotor bl_motor(FEHMotor::Motor2, 5.0);
-FEHMotor br_motor(FEHMotor::Motor3, 5.0);
+FEHMotor bl_motor(FEHMotor::Motor3, 5.0);
+FEHMotor br_motor(FEHMotor::Motor2, 5.0);
+
+AnalogInputPin cds(FEHIO::P0_4);
 
 //Here 'move_forward' means positive movement.
 /* IMPORTANT: Our coordinate system for this program is a top-down view of the course, with the starting point as the origin.
@@ -144,8 +146,8 @@ void start() {
 int main()
 {
     /* TODO: These are dummy values, put actual values in. */
-    int motor_percent = 25; //Input power level here
-    int expected_counts = 567; //Input theoretical counts here
+    //int motor_percent = 25; //Input power level here
+    //int expected_counts = 567; //Input theoretical counts here
 
     float x, y; //for touch screen
 
@@ -156,7 +158,7 @@ int main()
     while(!LCD.Touch(&x,&y));
     while(LCD.Touch(&x,&y));
 
-    start();
+    /*start();
     Sleep(500);
     //Want to make sure it's practically perfectly aligned with Y axis after start()
     //Move forward a little bit past the ramp.
@@ -165,12 +167,39 @@ int main()
 
     setHorizontalOrientation();
     Sleep(500);
-
+*/
     //Move to the right a bit. Line up with the lever.
-    move_forward(20, 100);
-    Sleep(500);
+    //move_forward(20, 800);
+        fl_encoder.ResetCounts();
+        fr_encoder.ResetCounts();
+        bl_encoder.ResetCounts();
+        br_encoder.ResetCounts();
+    while (true) {
+        LCD.Clear();
+        LCD.WriteLine(fr_encoder.Counts());
+        LCD.WriteLine(fl_encoder.Counts());
+        LCD.WriteLine(bl_encoder.Counts());
+        LCD.WriteLine(br_encoder.Counts());
+    }
+    Sleep(2000);
+    /*fl_encoder.ResetCounts();
+    fr_encoder.ResetCounts();
+    bl_encoder.ResetCounts();
+    br_encoder.ResetCounts();
+    LCD.Write("Initial BRE Counts: ");
+    LCD.WriteLine(br_encoder.Counts());
+    LCD.Write("Initial BLE Counts: ");
+    LCD.WriteLine(bl_encoder.Counts());
+    br_motor.SetPercent(-50.0);
+    bl_motor.SetPercent(50.0);
+    while (br_encoder.Counts() < 200 && bl_encoder.Counts() < 200) {
+       LCD.WriteLine(br_encoder.Counts());
+    }
+    br_motor.Stop();
+    bl_motor.Stop();
+    Sleep(2000); */
 
-    setVerticalOrientation();
+    /*setVerticalOrientation();
     Sleep(500);
 
     //Move up toward the lever.
@@ -178,19 +207,16 @@ int main()
     Sleep(500);
 
     pushLever(110.);
-    Sleep(500);
+    Sleep(500); */
 
     /* TODO: Have code for going back to starting position. Just reverse. */
 
-
-    /*
-    LCD.Write("Theoretical Counts: ");
-    LCD.WriteLine(expected_counts);
-    LCD.Write("Motor Percent: ");
-    LCD.WriteLine(motor_percent);
-    LCD.Write("Actual LE Counts: ");
-    LCD.WriteLine(left_encoder.Counts());
-    LCD.Write("Actual RE Counts: ");
-    LCD.WriteLine(right_encoder.Counts());
-    */
+    LCD.Write("Actual BLE Counts: ");
+    LCD.WriteLine(bl_encoder.Counts());
+    LCD.Write("Actual BRE Counts: ");
+    LCD.WriteLine(br_encoder.Counts());
+    LCD.Write("Actual FLE Counts: ");
+    LCD.WriteLine(fl_encoder.Counts());
+    LCD.Write("Actual FRE Counts: ");
+    LCD.WriteLine(fr_encoder.Counts());
 }
