@@ -5,10 +5,10 @@
 #include <FEHRPS.h>
 #include <FEHServo.h>
 #define WHEEL_RADIUS 1.375
-#define COUNTS_PER_REV 360
+#define COUNTS_PER_REV 512
 #define PI 3.14159265
 #define ROBOT_RADIUS 4.0
-#define OFFSET 5.0
+#define OFFSET 8.0
 
 //Starting orientation of robot is going to be the default.
 bool defaultOrientation = true;
@@ -73,9 +73,9 @@ void move_forward(int percent, int inches)
     bl_motor.SetPercent(percent);
     } else {
         fl_motor.SetPercent(percent);
-        br_motor.SetPercent(-1 * percent);
+        br_motor.SetPercent(-1 * percent - OFFSET);
         fr_motor.SetPercent(percent);
-        bl_motor.SetPercent(-1 * percent);
+        bl_motor.SetPercent(-1 * percent - OFFSET);
     }
 
     while(fr_encoder.Counts() < counts || bl_encoder.Counts() < counts){
@@ -95,16 +95,16 @@ void move_forward(int percent, int inches)
         LCD.WriteLine(fr_encoder.Counts());
 
         if(fr_encoder.Counts() > bl_encoder.Counts() + 100){
-            fr_motor.SetPercent(-percent + 10);
-            br_motor.SetPercent(-percent + 10);
+            fr_motor.SetPercent(-percent - OFFSET + 10);
+            br_motor.SetPercent(-percent - OFFSET + 10);
         }
         else if(fr_encoder.Counts() < bl_encoder.Counts() - 100){
-            fr_motor.SetPercent(-percent - 10);
-            br_motor.SetPercent(-percent - 10);
+            fr_motor.SetPercent(-percent - OFFSET - 10);
+            br_motor.SetPercent(-percent - OFFSET - 10);
         }
         else{
-            fr_motor.SetPercent(-percent);
-            br_motor.SetPercent(-percent);
+            fr_motor.SetPercent(-percent - OFFSET);
+            br_motor.SetPercent(-percent - OFFSET);
         }
 /*
         if(fr_encoder.Counts() > bl_encoder.Counts() + 150){
@@ -186,7 +186,7 @@ void turnLeft(int percent, int degrees){
     bl_encoder.ResetCounts();
     br_encoder.ResetCounts();
 
-    int counts = theoreticalDegree(degrees + 10);
+    int counts = theoreticalDegree(degrees);
 
     //Set motors to desired percent. Some motors have to turn backwards, so make percent negative.
     //Some motors have to turn backwards depending on the orientation, also.
@@ -235,7 +235,7 @@ void turnRight(int percent, int degrees){
     bl_encoder.ResetCounts();
     br_encoder.ResetCounts();
 
-    int counts = theoreticalDegree(degrees + 10);
+    int counts = theoreticalDegree(degrees);
 
     //Set motors to desired percent. Some motors have to turn backwards, so make percent negative.
     //Some motors have to turn backwards depending on the orientation, also.
@@ -350,13 +350,17 @@ int main()
     Sleep(100);
     turnRight(50, 45);
     Sleep(100);
-    move_forward(50, 18);
+    move_forward(50, 20);
     Sleep(100);
-    turnLeft(50, 120);
-    Sleep(100);
-    move_forward(50, 24);
+    move_backward(50, 3);
     Sleep(100);
     turnLeft(50, 90);
+    Sleep(100);
+    move_forward(50, 60);
+    Sleep(100);
+    turnLeft(50, 90);
+    Sleep(100);
+    move_backward(50, 5);
     Sleep(100);
     move_forward(50, 15);
     Sleep(100);
@@ -365,6 +369,7 @@ int main()
     lever_servo.SetDegree(120.0);
     Sleep(1000);
 
+    lever_servo.SetDegree(120.0);
     /*
     setHorizontalOrientation();
     Sleep(500);
