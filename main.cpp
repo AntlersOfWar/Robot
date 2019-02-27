@@ -5,10 +5,10 @@
 #include <FEHRPS.h>
 #include <FEHServo.h>
 #define WHEEL_RADIUS 1.375
-#define COUNTS_PER_REV 512
+#define COUNTS_PER_REV 48
 #define PI 3.14159265
 #define ROBOT_RADIUS 4.0
-#define OFFSET 8.0
+#define OFFSET 5.0
 
 //Starting orientation of robot is going to be the default.
 bool defaultOrientation = true;
@@ -84,7 +84,7 @@ void move_forward(int percent, int inches)
         LCD.Write(inches);
         LCD.WriteLine(" inches");
         LCD.Write("THEORETICAL COUNTS: ");
-        LCD.WriteLine(theoreticalCounts(inches));
+        LCD.WriteLine(counts);
         LCD.Write("Actual BLE Counts: ");
         LCD.WriteLine(bl_encoder.Counts());
         LCD.Write("Actual BRE Counts: ");
@@ -94,11 +94,11 @@ void move_forward(int percent, int inches)
         LCD.Write("Actual FRE Counts: ");
         LCD.WriteLine(fr_encoder.Counts());
 
-        if(fr_encoder.Counts() > bl_encoder.Counts() + 100){
+        if(fr_encoder.Counts() > bl_encoder.Counts() + 20){
             fr_motor.SetPercent(-percent - OFFSET + 10);
             br_motor.SetPercent(-percent - OFFSET + 10);
         }
-        else if(fr_encoder.Counts() < bl_encoder.Counts() - 100){
+        else if(fr_encoder.Counts() < bl_encoder.Counts() - 20){
             fr_motor.SetPercent(-percent - OFFSET - 10);
             br_motor.SetPercent(-percent - OFFSET - 10);
         }
@@ -328,7 +328,7 @@ int main()
     // max for main servo: 2475
     // min for lever servo: 514
     // max for lever servo: 2430
-
+    int percent = 50;
     //Initialize the screen
     LCD.Clear(BLACK);
     LCD.SetFontColor(WHITE);
@@ -344,7 +344,6 @@ int main()
         LCD.WriteLine("Looking for Red Light...");
         LCD.WriteLine(cds.Value());
     }
-
     Sleep(50);
     move_forward(50, 4);
     Sleep(100);
@@ -352,11 +351,11 @@ int main()
     Sleep(100);
     move_forward(50, 20);
     Sleep(100);
-    move_backward(50, 3);
+    move_backward(50, 2);
     Sleep(100);
-    turnLeft(50, 90);
+    turnLeft(50, 105);
     Sleep(100);
-    move_forward(50, 60);
+    move_forward(50, 45);
     Sleep(100);
     turnLeft(50, 90);
     Sleep(100);
@@ -369,7 +368,6 @@ int main()
     lever_servo.SetDegree(120.0);
     Sleep(1000);
 
-    lever_servo.SetDegree(120.0);
     /*
     setHorizontalOrientation();
     Sleep(500);
